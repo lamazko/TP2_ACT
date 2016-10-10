@@ -15,6 +15,17 @@ let meilleur_gris tableau premier dernier =
 let au_carre valeur = 
 	valeur * valeur;;
 
+let distance_min tableau deb fin = 
+	let moyenne = (meilleur_gris tableau deb fin)
+	and score = ref 0 in
+	for i = deb to fin do
+	score := !score + au_carre (tableau.(i) - moyenne); 
+	done;
+	!score;;
+
+
+
+
 
 let _ = 
 	let c = ref 0 in
@@ -48,6 +59,11 @@ let test_meilleur_gris3 =
 	255 == meilleur_gris t3 0 9;;
 
 
+let test_distance_min = 
+	let t = ref (distance_min t1 0 9) in
+	t := !t + (distance_min t2 0 4);
+	t := !t + (distance_min t3 0 9);
+	5096 == !t;;
 
 
 
