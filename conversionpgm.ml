@@ -42,12 +42,13 @@ input_line lecture;
 Printf.printf("\n");
 let tableauname = sub Sys.argv.(1) 0 ((length Sys.argv.(1))-4) in
 Printf.printf("let %s = [|") tableauname;
-for i = 1 to (int_of_string hauteur)-1 do
+for i = 1 to (int_of_string hauteur)-2 do
 Printf.printf("[|");
 for j = 1 to (int_of_string longeur)-1 do
 let caract = lecture_couleur lecture in
 Printf.printf("%s;") caract;
 done;
+Printf.printf("[|");
 let caract2 = lecture_last lecture in
 Printf.printf("%s|]\n") caract2;
 done;
