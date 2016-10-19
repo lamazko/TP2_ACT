@@ -2,6 +2,7 @@
 
 let t1bis = [|(0,5);(20,5);(100,1);(132,1);(164,2);(180,1);(255,10)|];;
 
+let t2bis = [|(0,3);(10,2);(30,4);(40,1);(100,1)|];;
 
 let meilleur_gris tableau premier dernier = 
 	let somme_poid = ref 0
@@ -10,7 +11,6 @@ let meilleur_gris tableau premier dernier =
 		somme_poid_gris := !somme_poid_gris + (fst(tableau.(i)))*(snd(tableau.(i)));
 		somme_poid := !somme_poid + snd(tableau.(i));
 		done;
-	Printf.printf("%d\n") !somme_poid;
 	!somme_poid_gris / !somme_poid;;
 
 let au_carre valeur = 
@@ -22,6 +22,7 @@ let distance_min tableau deb fin =
 	for i = deb to fin do
 	score := !score + (au_carre ((fst(tableau.(i)) - moyenne))) * snd(tableau.(i)); 
 	done;
+	Printf.printf("%d\n") !score;
 	!score;;
 
 
@@ -42,10 +43,45 @@ else
 		if !res = -1 then
 		res := (distance_min palette debut (debut+i)) + (algo palette (k-1) (debut+i+1) fin)
 		else 
-		res := min (!res) (distance_min palette debut (debut+i)) + (algo palette (k-1) (debut+i+1) fin);
+		res := min (!res) ((distance_min palette debut (debut+i)) + (algo palette (k-1) (debut+i+1) fin));
 	done;
 	!res;
 	end;;
+
+
+
+let rec algo2 palette tableau k debut fin= 
+if k = 1 then
+	distance_min palette debut fin
+else 	
+	begin
+	let res = ref (-1) in
+	for i = 0 to (fin-k-debut+1) do
+		if !res = -1 then
+		res := tableau.(debut).(debut+i) + (algo2 palette tableau (k-1) (debut+i+1) fin)
+		else 
+		res := min (!res) (tableau.(debut).(debut+i) + (algo2 palette tableau (k-1) (debut+i+1) fin));
+	done;
+	!res;
+	end;;
+
+
+
+
+
+let al palette k debut fin = 
+	let t = Array.make fin (Array.make fin 0) in
+	for i = 0 to fin-1 do
+		for j = 0 to fin-1 do
+		if i < j then
+	t.(i).(j) <- distance_min palette i j;
+		done;
+	done;
+	algo2 palette t k debut fin;;
+	
+	
+
+
 
 
 
@@ -64,7 +100,7 @@ let _ =
 *)
 
 
-let t = [|22;28;33;55;128;128;128;255;255|];;
+(*let t = [|22;28;33;55;128;128;128;255;255|];; *)
 
 let t1 = [|0;0;0;0;0;20;20;20;20;20|];;
 
