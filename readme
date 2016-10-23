@@ -4,3 +4,5 @@ make clean efface tout ce que make a créé.
 pour créer le fichier, fait gaffe faut pas l'ouvrir avec gedit ça plante, mais le fichier est bien le bon
 ./reconv randomnom.ml 255 > randomnom.pgm
 pareil ça crée bien l'image (tu peux l'ouvrir avec gimp) mais par contre si tu l'ouvres avec gedit ça va planter.
+
+oublie pas export OCAMLRUNPARAM=l=100M dans tout les dossiers où tu clones le projet
