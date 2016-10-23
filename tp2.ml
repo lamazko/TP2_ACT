@@ -1,6 +1,7 @@
 
 open List;;
 open Baboon_gray;;
+
 let cpt = ref 0;;
 
 
@@ -51,6 +52,7 @@ let au_carre valeur =
 	valeur * valeur;;
 
 let distance_min tableau deb fin = 
+	cpt := !cpt+1;
 	let moyenne = (meilleur_gris tableau deb fin)
 	and score = ref 0 in
 	for i = deb to fin do
@@ -64,6 +66,7 @@ if a > b then
 	b 
 	else 
 a;;
+
 
 
 let rec algo palette k debut fin= 
@@ -80,6 +83,47 @@ else
 	done;
 	!res;
 	end;;
+
+
+let algo1cpt palette k debut fin = 
+	cpt := 0;
+	algo palette k debut fin;;
+
+
+
+
+let rec algo2 palette tableau k debut fin = 
+if k = 1 then
+	distance_min palette debut fin
+else 	
+	begin
+	let res = ref (-1) in
+	for i = 0 to (fin-k-debut+1) do
+		if !res = -1 then
+		res := tableau.(debut).(debut+i) + (algo2 palette tableau (k-1) (debut+i+1) fin)
+		else 
+		res := min (!res) (tableau.(debut).(debut+i) + (algo2 palette tableau (k-1) (debut+i+1) fin));
+	done;
+	!res;
+	end;;
+
+
+
+
+let algo2cpt palette k debut fin = 
+	cpt := 0;
+	let t = Array.make_matrix (fin+1) (fin+1) 0 in
+	for i = 0 to fin-1 do
+		for j = 0 to fin do
+		if i < j then 
+		begin
+		t.(i).(j) <- (distance_min palette i j); 
+		end;
+		done;
+	done;
+	algo2 palette t k debut fin;;
+
+
 
 
 
@@ -104,6 +148,9 @@ else
 
 
 
+
+
+
 let al palette k debut fin = 
 	let t = Array.make_matrix (fin+1) (fin+1) 0 and
 	l = [] in
@@ -116,7 +163,6 @@ let al palette k debut fin =
 		done;
 	done;
 	algo3 palette t k debut fin l;;
-
 
 
 
@@ -221,50 +267,8 @@ let algofinal tableaupixel tailletab couleurmax k =
 
 
 
-
-Random.self_init();;
-
-
-
-let tableau_aleatoire n longeur hauteur =
-  let f i =
-    ((Random.int longeur),(Random.int hauteur))
-  in
-  Array.init n f;;
-
-let tableau n  k longeur hauteur= 
- let f i = tableau_aleatoire n longeur hauteur
- in 
- Array.init k f;;
-
-
-let al palette k debut fin = 
-	let t = Array.make_matrix (fin+1) (fin+1) 0 and
-	l = [] in
-	for i = 0 to fin-1 do
-		for j = 0 to fin do
-		if i < j then 
-		begin
-		Printf.printf("%d %d \n") i j;
-		Printf.printf("%d \n") (distance_min palette i j); 
-		t.(i).(j) <- (distance_min palette i j); 
-		Printf.printf("%d \n") t.(i).(j);
-		end;
-		done;
-	done;
-	algo3 palette t k debut fin l;;
-
-
-
-let t = algofinal baboon_gray (Array.length baboon_gray) 255 3;;
-
-
-
 let _ = 
 	let t = algofinal baboon_gray (Array.length baboon_gray) 255 3 in
-        for i = 0 to Array.length t-1 do
- 	t.(i) <- (t.(i) +30)
-	done;;
         Printf.printf("let longeurtab = 512 ;;\n");
         Printf.printf("let hauteurtab = 512 ;;\n\n");
 	Printf.printf("let t = [|");
@@ -272,6 +276,10 @@ let _ =
 	Printf.printf("%d;") t.(i);
 	done;
 	Printf.printf("%d|];;") t.((Array.length t)-1);;	
+
+
+	
+
 
 (*
 ------------------------------------------------------------------------
@@ -310,6 +318,81 @@ let test_distance_min =
 *)
 
 
+(*
+------------------------------------------------------------------------
+			Partie Complexite
+
+*)
 
 
+
+Random.self_init();;
+
+
+
+let tableau_aleatoire n taille =
+  let f i =
+    (Random.int taille)
+  in
+  Array.init n f;;
+
+let palette_aleatoire n taille = 
+	let t = tableau_aleatoire n (taille+1) in
+	let t1 = tableau_to_palette t n taille in
+	palette_reduction t1;;
+
+let echanger tableau i j=
+  let memoire=tableau.(i) in
+  tableau.(i)<-tableau.(j);
+  tableau.(j)<-memoire;;
+
+let partition tableau deb fin=
+  let pivot=tableau.(deb) and compteur=ref(deb) in
+  for i=(deb+1) to fin do
+    if(tableau.(i)<pivot) then
+      begin
+        compteur:=(!compteur)+1;
+        echanger tableau i (!compteur);
+      end;
+  done;
+  echanger tableau (!compteur) deb;
+  (!compteur);;
+	
+
+
+let tri_rapide tableau=
+  let rec tri_rapide_bis tableau deb fin=
+    if deb<fin then
+      begin
+        let position=(partition tableau deb fin) in
+        tri_rapide_bis tableau deb (position-1);
+        tri_rapide_bis tableau (position+1) fin;
+      end;
+  in
+    tri_rapide_bis tableau 0 (Array.length(tableau)-1);;	
+
+
+
+let complexite algo n taille = 
+	let proba = ref 0 in
+		for i = 1 to 25 do
+			let t = palette_aleatoire n taille in
+				algo t 4 0 ((Array.length t)-1); 
+				proba := !proba + !cpt; 
+		done;
+	proba := !proba/25;
+	!proba;;
+
+
+(*
+
+let _ =
+
+		for j = 1 to 7 do
+				Printf.printf("%3d %8d %8d \n") (j*10) (complexite algo1cpt (j*10) 255)
+				 (complexite algo2cpt (j*10) 255);
+		done;;
+
+
+*)
 
